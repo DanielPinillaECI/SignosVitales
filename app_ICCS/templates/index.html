@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualización de Sensor</title>
+    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet" type="text/css" >
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function checkSensorValues() {
+            // Realizar una solicitud GET /get_sensor_value1' y '/get_sensor_value2'
+            $.get('/get_sensor_value1', function(sensor1Data) {
+                $.get('/get_sensor_value2', function(sensor2Data) {
+                    
+                    if (parseFloat(sensor1Data) > 2000 ) {
+                      
+                        alert("¡Alerta! el ritmo cardiaco es muy alto");
+                    }
+                    if (parseFloat(sensor2Data) < 2000){
+                        alert("El nivel de oxigeno es muy bajo");
+                    }
+                    if (parseFloat(sensor1Data) > 2000|| parseFloat(sensor2Data) < 2000){
+                        alert("!ALERTA!, El nivel de oxígeno es muy bajo y el ritmo cardiaco es muy alto:")
+                    }
+                });
+            });
+        }
+        setInterval(checkSensorValues, 1000);
+
+        $(document).ready(function(){
+            function updateSensorValue() {
+                $.ajax({
+                    url: '/get_sensor_value1',
+                    type: 'GET',
+                    success: function(data) {
+                        $('.sensor-value').text(data);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            // Actualiza el valor del sensor 
+            setInterval(updateSensorValue, 1000);
+
+        });
+        $(document).ready(function(){
+            function updateSensorValue1() {
+                $.ajax({
+                    url: '/get_sensor_value2',
+                    type: 'GET',
+                    success: function(data) {
+                        $('.sensor-value1').text(data);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            // Actualiza el valor del sensor 
+            setInterval(updateSensorValue1, 1000);
+        });
+    </script>
+</head>
+<body>
+    <h1>Datos del Sensor</h1>
+    <p>Valor del sensor 1: <span class="sensor-value">{{ sensor_data1 }}</span></p>
+    <p>Valor del sensor 2: <span class="sensor-value1">{{ sensor_data2 }}</span></p>
+</body>
+</html>
